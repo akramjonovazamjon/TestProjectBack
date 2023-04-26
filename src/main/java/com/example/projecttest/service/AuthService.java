@@ -5,12 +5,11 @@ import com.example.projecttest.dto.auth.UserDto;
 import com.example.projecttest.dto.auth.TokenResult;
 import com.example.projecttest.entity.User;
 import com.example.projecttest.exception.user.UserExistByUsernameException;
+import com.example.projecttest.exception.user.UserNotFoundByUsernameException;
 import com.example.projecttest.repository.UserRepository;
 import com.example.projecttest.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     @Value("${jwt.secret}")
     private String tokenSecret;
@@ -38,8 +36,7 @@ public class AuthService {
 
 
     public TokenResult signIn(LoginDto dto) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.username(), dto.password()));
-        User user = userRepository.findByUsername(dto.username()).orElseThrow();
+        User user = userRepository.findByUsername(dto.username()).orElseThrow(() -> new UserNotFoundByUsernameException(dto.username()));
         String token = JwtUtils.generateToken(user.asDetailedUser(), tokenSecret);
         return new TokenResult(token);
     }
