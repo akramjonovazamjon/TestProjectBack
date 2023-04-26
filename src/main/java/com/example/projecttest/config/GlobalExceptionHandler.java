@@ -7,6 +7,7 @@ import com.example.projecttest.exception.organization.OrganizationExistByNameExc
 import com.example.projecttest.exception.organization.OrganizationNotFoundByIdException;
 import com.example.projecttest.exception.user.UserExistByUsernameException;
 import com.example.projecttest.exception.user.UserNotFoundByUsernameException;
+import com.example.projecttest.exception.user.UserPasswordNoMatchesException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,6 +49,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserNotFoundByUsernameException.class)
     public ResponseData<Object> handleUserNotFoundByUsernameException(UserNotFoundByUsernameException e) {
+        return ResponseData.errorOf(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(UserPasswordNoMatchesException.class)
+    public ResponseData<Object> handleUserPasswordNoMatchesException(UserPasswordNoMatchesException e) {
         return ResponseData.errorOf(e.getMessage());
     }
 
