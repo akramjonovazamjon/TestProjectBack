@@ -6,6 +6,7 @@ import com.example.projecttest.dto.auth.TokenResult;
 import com.example.projecttest.entity.User;
 import com.example.projecttest.exception.user.UserExistByUsernameException;
 import com.example.projecttest.exception.user.UserNotFoundByUsernameException;
+import com.example.projecttest.exception.user.UserPasswordNoMatchesException;
 import com.example.projecttest.repository.UserRepository;
 import com.example.projecttest.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,8 @@ public class AuthService {
 
     public TokenResult signIn(LoginDto dto) {
         User user = userRepository.findByUsername(dto.username()).orElseThrow(() -> new UserNotFoundByUsernameException(dto.username()));
+        if (!passwordEncoder.matches(dto.password(), user.getPassword()))
+            throw new UserPasswordNoMatchesException();
         String token = JwtUtils.generateToken(user.asDetailedUser(), tokenSecret);
         return new TokenResult(token);
     }
