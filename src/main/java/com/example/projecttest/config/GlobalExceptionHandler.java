@@ -5,6 +5,9 @@ import com.example.projecttest.exception.employee.EmployeeExistByPhoneNumberExce
 import com.example.projecttest.exception.employee.EmployeeNotFoundByIdException;
 import com.example.projecttest.exception.organization.OrganizationExistByNameException;
 import com.example.projecttest.exception.organization.OrganizationNotFoundByIdException;
+import com.example.projecttest.exception.position.PositionExistByNameException;
+import com.example.projecttest.exception.position.PositionNotFoundByIdException;
+import com.example.projecttest.exception.position.PositionNotFoundByNameException;
 import com.example.projecttest.exception.user.UserExistByUsernameException;
 import com.example.projecttest.exception.user.UserNotFoundByUsernameException;
 import com.example.projecttest.exception.user.UserPasswordNoMatchesException;
@@ -55,6 +58,24 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserPasswordNoMatchesException.class)
     public ResponseData<Object> handleUserPasswordNoMatchesException(UserPasswordNoMatchesException e) {
+        return ResponseData.errorOf(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(PositionExistByNameException.class)
+    public ResponseData<Object> handlePositionExistByNameException(PositionExistByNameException e) {
+        return ResponseData.errorOf(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(PositionNotFoundByNameException.class)
+    public ResponseData<Object> handlePositionNotFoundByNameException(PositionNotFoundByNameException e) {
+        return ResponseData.errorOf(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(PositionNotFoundByIdException.class)
+    public ResponseData<Object> handlePositionNotFoundByIdException(PositionNotFoundByIdException e) {
         return ResponseData.errorOf(e.getMessage());
     }
 

@@ -1,8 +1,9 @@
 package com.example.projecttest.service;
 
 import com.example.projecttest.dto.employee.CreateEmployee;
+import com.example.projecttest.dto.employee.UpdateEmployee;
 import com.example.projecttest.entity.Employee;
-import com.example.projecttest.entity.Organization;
+import com.example.projecttest.entity.Position;
 import com.example.projecttest.exception.employee.EmployeeExistByPhoneNumberException;
 import com.example.projecttest.exception.employee.EmployeeNotFoundByIdException;
 import com.example.projecttest.mapper.EmployeeMapper;
@@ -17,16 +18,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeService {
     private final EmployeeRepository repository;
-    private final OrganizationService organizationService;
+    private final PositionService positionService;
     private final EmployeeMapper mapper;
 
-    public Employee create(Long orgId, CreateEmployee dto) {
+    public Employee create(CreateEmployee dto) {
         if (repository.existsByPhoneNumber(dto.phoneNumber()))
             throw new EmployeeExistByPhoneNumberException(dto.phoneNumber());
 
-        Organization organization = organizationService.getById(orgId);
+        Position position = positionService.getById(dto.positionId());
 
-        Employee employee = mapper.newEmployee(dto, organization);
+        Employee employee = mapper.newEmployee(dto, position);
 
         return repository.save(employee);
     }
@@ -35,12 +36,19 @@ public class EmployeeService {
         return repository.findById(id).orElseThrow(() -> new EmployeeNotFoundByIdException(id));
     }
 
-    public List<Employee> getOrgEmployees(Long orgId, Pageable pageable) {
-        return repository.findAllByOrganizationId(orgId, pageable).getContent();
-    }
-
     public List<Employee> getAll(Pageable pageable) {
         return repository.findAll(pageable).getContent();
+    }
+
+    public void update(Long id, UpdateEmployee dto) {
+        boolean exists = repository.existsByPhoneNumberAndIdNot(dto.phoneNumber(), id);
+        if (exists)
+            throw new EmployeeExistByPhoneNumberException(dto.phoneNumber());
+
+        Position position = positionService.getById(dto.positionId());
+        Employee employee = getById(id);
+        mapper.asUpdateEmployee(dto, position, employee);
+        repository.save(employee);
     }
 
     public void delete(Long id) {

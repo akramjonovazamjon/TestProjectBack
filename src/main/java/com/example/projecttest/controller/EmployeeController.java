@@ -3,6 +3,7 @@ package com.example.projecttest.controller;
 import com.example.projecttest.controller.vm.EmployeeVm;
 import com.example.projecttest.dto.ResponseData;
 import com.example.projecttest.dto.employee.CreateEmployee;
+import com.example.projecttest.dto.employee.UpdateEmployee;
 import com.example.projecttest.entity.Employee;
 import com.example.projecttest.mapper.EmployeeMapper;
 import com.example.projecttest.service.EmployeeService;
@@ -15,19 +16,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/organizations/{orgId}/employees")
+@RequestMapping("/employees")
 public class EmployeeController {
 
     private final EmployeeService service;
     private final EmployeeMapper mapper;
 
     @PostMapping
-    public ResponseData<EmployeeVm> create(@RequestBody @Valid CreateEmployee dto, @PathVariable Long orgId) {
-        Employee employee = service.create(orgId, dto);
+    public ResponseData<EmployeeVm> create(@RequestBody @Valid CreateEmployee dto) {
+        Employee employee = service.create(dto);
         return ResponseData.of(mapper.asEmployeeVm(employee));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseData<List<EmployeeVm>> getAll(Pageable pageable) {
         List<Employee> employees = service.getAll(pageable);
         return ResponseData.of(mapper.asEmployeeList(employees));
@@ -39,10 +40,9 @@ public class EmployeeController {
         return ResponseData.of(mapper.asEmployeeVm(employee));
     }
 
-    @GetMapping
-    public ResponseData<List<EmployeeVm>> getOrganizationEmployees(@PathVariable Long orgId, Pageable pageable) {
-        List<Employee> orgEmployees = service.getOrgEmployees(orgId, pageable);
-        return ResponseData.of(mapper.asEmployeeList(orgEmployees));
+    @PutMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody UpdateEmployee dto) {
+        service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

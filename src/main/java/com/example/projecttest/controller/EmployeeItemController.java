@@ -4,7 +4,7 @@ import com.example.projecttest.controller.vm.EmployeeItemVm;
 import com.example.projecttest.controller.vm.EmployeeWorkingSalary;
 import com.example.projecttest.dto.ResponseData;
 import com.example.projecttest.dto.employee.CreateEmployeeItem;
-import com.example.projecttest.dto.employee.YearMonthDto;
+import com.example.projecttest.dto.employee.UpdateEmployeeItem;
 import com.example.projecttest.entity.EmployeeItem;
 import com.example.projecttest.mapper.EmployeeItemMapper;
 import com.example.projecttest.service.EmployeeItemService;
@@ -28,15 +28,25 @@ public class EmployeeItemController {
         return ResponseData.of(mapper.asEmployeeItemVm(employeeItem));
     }
 
-    @PutMapping
-    public ResponseData<List<EmployeeItemVm>> getMonthlyWorkingStatistics(@PathVariable Long empId, @RequestBody YearMonthDto dto) {
-        List<EmployeeItem> employeeMonthlyWorkingHours = service.getEmployeeMonthlyWorkingHours(empId, dto);
+    @GetMapping
+    public ResponseData<List<EmployeeItemVm>> getMonthlyWorkingStatistics(@PathVariable Long empId, @RequestParam int year, @RequestParam int month) {
+        List<EmployeeItem> employeeMonthlyWorkingHours = service.getEmployeeMonthlyWorkingHours(empId, year, month);
         return ResponseData.of(mapper.asEmployeeItemList(employeeMonthlyWorkingHours));
     }
 
-    @PutMapping("/salary")
-    public ResponseData<EmployeeWorkingSalary> getEmployeeSalary(@PathVariable Long empId, @RequestBody YearMonthDto dto) {
-        EmployeeWorkingSalary employeeMonthlySalary = service.getEmployeeMonthlySalary(empId, dto);
+    @GetMapping("/salary")
+    public ResponseData<EmployeeWorkingSalary> getEmployeeSalary(@PathVariable Long empId, @RequestParam int year, @RequestParam int month) {
+        EmployeeWorkingSalary employeeMonthlySalary = service.getEmployeeMonthlySalary(empId, year, month);
         return ResponseData.of(employeeMonthlySalary);
+    }
+
+    @PutMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody UpdateEmployeeItem dto) {
+        service.update(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

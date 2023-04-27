@@ -1,15 +1,14 @@
 package com.example.projecttest.controller.vm;
 
 
-import java.math.BigDecimal;
 import java.time.YearMonth;
 
 public record EmployeeWorkingSalary(Long employeeId,
                                     String fullName,
-                                    BigDecimal salaryForHour,
                                     String phoneNumber,
+                                    String position,
                                     String organization,
                                     YearMonth month,
-                                    Long monthlySalary,
+                                    Double salary,
                                     Long monthlyWorkingHour) {
 }

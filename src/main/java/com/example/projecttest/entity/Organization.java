@@ -4,7 +4,7 @@ import com.example.projecttest.dto.organization.CreateOrganization;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +20,7 @@ public class Organization {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
-    private List<Employee> employees;
+    private Set<Position> positions;
 
     public static Organization of(CreateOrganization dto) {
         return Organization.builder()

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -18,9 +17,6 @@ public class Employee {
     private String fullName;
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
-    @Column(name = "salary", nullable = false)
-    private BigDecimal salary;
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    private Position position;
 }
