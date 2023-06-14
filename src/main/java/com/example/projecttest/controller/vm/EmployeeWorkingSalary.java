@@ -9,6 +9,8 @@ public record EmployeeWorkingSalary(Long employeeId,
                                     String position,
                                     String organization,
                                     YearMonth month,
+                                    Double totalSalary,
                                     Double salary,
+                                    Long monthlyHours,
                                     Long monthlyWorkingHour) {
 }

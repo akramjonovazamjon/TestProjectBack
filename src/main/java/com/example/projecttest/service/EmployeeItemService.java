@@ -55,7 +55,7 @@ public class EmployeeItemService {
         Double salary = (monthlyWorkingHours.doubleValue() * employee.getPosition().getSalary().doubleValue()) / 160;
         return new EmployeeWorkingSalary(empId, employee.getFullName(), employee.getPhoneNumber(),
                 employee.getPosition().getName(), employee.getPosition().getOrganization().getName(),
-                YearMonth.of(year, month), salary, monthlyWorkingHours
+                YearMonth.of(year, month), employee.getPosition().getSalary().doubleValue(), salary, 160L, monthlyWorkingHours
         );
     }
 }
