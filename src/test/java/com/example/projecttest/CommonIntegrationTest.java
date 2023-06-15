@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.lifecycle.Startables;
 
 
 @Testcontainers
@@ -25,7 +26,16 @@ public abstract class CommonIntegrationTest {
     @Autowired
     public ObjectMapper objectMapper;
     @Container
-    private static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
+    private static PostgreSQLContainer<?> postgreSQLContainer;
+
+    static {
+        postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
+                .withEnv("MAX_HEAP_SIZE", "256M")
+                .withEnv("HEAP_NEWSIZE", "128M")
+                .withReuse(true);
+
+        Startables.deepStart(postgreSQLContainer).join();
+    }
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {

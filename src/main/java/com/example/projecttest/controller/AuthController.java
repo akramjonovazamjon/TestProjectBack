@@ -7,10 +7,8 @@ import com.example.projecttest.dto.auth.TokenResult;
 import com.example.projecttest.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,6 +17,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sign-up")
     public ResponseData<TokenResult> signUp(@RequestBody @Valid UserDto dto) {
         TokenResult signUpResult = authService.signUp(dto);
