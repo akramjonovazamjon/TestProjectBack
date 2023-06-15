@@ -8,6 +8,7 @@ import com.example.projecttest.mapper.PositionMapper;
 import com.example.projecttest.service.PositionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class PositionController {
     private final PositionService service;
     private final PositionMapper mapper;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseData<PositionVm> create(@RequestBody @Valid CreatePosition dto) {
         Position position = service.create(dto);

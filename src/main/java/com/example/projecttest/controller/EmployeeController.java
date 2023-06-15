@@ -10,6 +10,7 @@ import com.example.projecttest.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class EmployeeController {
     private final EmployeeService service;
     private final EmployeeMapper mapper;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ResponseData<EmployeeVm> create(@RequestBody @Valid CreateEmployee dto) {
         Employee employee = service.create(dto);
