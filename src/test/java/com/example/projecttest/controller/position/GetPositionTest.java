@@ -1,14 +1,13 @@
 package com.example.projecttest.controller.position;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.organization.CreateOrganization;
+import com.example.projecttest.dto.position.CreatePosition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,30 +21,13 @@ public class GetPositionTest extends CommonIntegrationTest {
     @DisplayName("get all positions status 200")
     void shouldGetAllPositions() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilderForOrgAdd = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Exadel")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-        mockMvc.perform(requestBuilderForOrgAdd);
+        testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(1500), 1L));
 
-        MockHttpServletRequestBuilder requestBuilderForPositionAdd1 = MockMvcRequestBuilders
-                .post("/positions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 1500, "orgId", 1)));
+        testDataHelperPosition.createPositionRequest(new CreatePosition("C# Developer", BigDecimal.valueOf(1000), 1L));
 
-        MockHttpServletRequestBuilder requestBuilderForPositionAdd2 = MockMvcRequestBuilders
-                .post("/positions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "C# Developer", "salary", 1500, "orgId", 1)));
-
-        mockMvc.perform(requestBuilderForPositionAdd1);
-        mockMvc.perform(requestBuilderForPositionAdd2);
-
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/positions");
-
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
+        ResultActions resultActions = testDataHelperPosition.getPositionRequest();
 
         resultActions
                 .andExpect(status().isOk())

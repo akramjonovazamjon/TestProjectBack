@@ -1,5 +1,9 @@
 package com.example.projecttest;
 
+import com.example.projecttest.controller.auth.data.TestDataHelperAuth;
+import com.example.projecttest.controller.employee.data.TestDataHelperEmployee;
+import com.example.projecttest.controller.organization.data.TestDataHelperOrganization;
+import com.example.projecttest.controller.position.data.TestDataHelperPosition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +24,20 @@ import org.testcontainers.lifecycle.Startables;
 @AutoConfigureMockMvc
 public abstract class CommonIntegrationTest {
 
-    @Autowired
-    public MockMvc mockMvc;
-
-    @Autowired
-    public ObjectMapper objectMapper;
     @Container
     private static PostgreSQLContainer<?> postgreSQLContainer;
+
+    @Autowired
+    public TestDataHelperAuth testDataHelperAuth;
+
+    @Autowired
+    public TestDataHelperEmployee testDataHelperEmployee;
+
+    @Autowired
+    public TestDataHelperOrganization testDataHelperOrganization;
+
+    @Autowired
+    public TestDataHelperPosition testDataHelperPosition;
 
     static {
         postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")

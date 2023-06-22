@@ -1,13 +1,15 @@
 package com.example.projecttest.controller.employee;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.employee.CreateEmployee;
+import com.example.projecttest.dto.employee.UpdateEmployee;
+import com.example.projecttest.dto.organization.CreateOrganization;
+import com.example.projecttest.dto.position.CreatePosition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,57 +22,24 @@ public class UpdateEmployeeTest extends CommonIntegrationTest {
     @DisplayName("should update employee status code 200")
     void shouldUpdateEmployee() throws Exception {
 
-        // create organization
-        {
-            mockMvc.perform(
-                    MockMvcRequestBuilders
-                            .post("/organizations")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("name", "Exadel"))));
-        }
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-        //create position
-        {
-            mockMvc.perform(
-                    MockMvcRequestBuilders
-                            .post("/positions")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("name", "C#", "salary", 5000, "orgId", 1))));
+        testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(7000), 1L));
 
-            mockMvc.perform(
-                    MockMvcRequestBuilders
-                            .post("/positions")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 7000, "orgId", 1))));
-        }
+        testDataHelperPosition.createPositionRequest(new CreatePosition("C#", BigDecimal.valueOf(5000), 1L));
 
-        //create employee
-        {
-            mockMvc.perform(
-                    MockMvcRequestBuilders
-                            .post("/employees")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("fullName", "A'zamjon", "phoneNumber", "9175", "positionId", 1))));
-        }
+        testDataHelperEmployee.createEmployeeRequest(new CreateEmployee("A'zamjon", "9175", 1L));
 
-        //update employee
-        {
-            mockMvc.perform(
-                    MockMvcRequestBuilders
-                            .put("/employees/1")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(Map.of("fullName", "Akramjonov", "phoneNumber", "9175", "positionId", 2))));
+        ResultActions resultActions = testDataHelperEmployee.updateEmployeeRequest(new UpdateEmployee("Akramjonov", "9175", 2l));
 
-            ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/employees/1"));
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.fullName").value("Akramjonov"))
+                .andExpect(jsonPath("$.result.id").value(1))
+                .andExpect(jsonPath("$.result.position").value("Java Developer"))
+                .andExpect(jsonPath("$.result.salary").value(7000))
+                .andExpect(jsonPath("$.result.organization").value("Exadel"));
 
-            resultActions
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result.fullName").value("Akramjonov"))
-                    .andExpect(jsonPath("$.result.id").value(1))
-                    .andExpect(jsonPath("$.result.position").value("Java Developer"))
-                    .andExpect(jsonPath("$.result.salary").value(7000))
-                    .andExpect(jsonPath("$.result.organization").value("Exadel"));
-        }
     }
 
 }

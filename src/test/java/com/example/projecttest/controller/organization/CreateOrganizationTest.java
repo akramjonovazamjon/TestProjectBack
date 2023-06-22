@@ -1,14 +1,10 @@
 package com.example.projecttest.controller.organization;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.organization.CreateOrganization;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,14 +17,7 @@ public class CreateOrganizationTest extends CommonIntegrationTest {
     @DisplayName("Should create a organizations with 200 status")
     void shouldCreateOrganizations() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Org1")));
-
-
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
+        ResultActions resultActions = testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Org1"));
 
         resultActions
                 .andExpect(status().isOk())
@@ -40,35 +29,20 @@ public class CreateOrganizationTest extends CommonIntegrationTest {
     @DisplayName("Should not create a organizations with 409 status")
     void shouldFailNameDuplicate() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Org1")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Org1"));
 
+        ResultActions resultActions = testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Org1"));
 
-        mockMvc.perform(requestBuilder);
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
-
-        resultActions
-                .andExpect(status().isConflict());
+        resultActions.andExpect(status().isConflict());
     }
 
     @Test
     @DisplayName("Should not create a organizations with 400 status")
     void shouldFailRequiredFieldNull() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON);
+        ResultActions resultActions = testDataHelperOrganization.createOrganizationRequest(null);
 
-
-        ResultActions resultActions = mockMvc.perform(requestBuilder);
-
-
-        resultActions
-                .andExpect(status().isBadRequest());
+        resultActions.andExpect(status().isBadRequest());
     }
-
 
 }

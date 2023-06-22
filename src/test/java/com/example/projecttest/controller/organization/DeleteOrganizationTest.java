@@ -1,14 +1,10 @@
 package com.example.projecttest.controller.organization;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.organization.CreateOrganization;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,17 +15,9 @@ public class DeleteOrganizationTest extends CommonIntegrationTest {
     @DisplayName("should delete organization status 200")
     void shouldDeleteOrganization() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilderForAdd = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .contentType(objectMapper.writeValueAsString(Map.of("name", "Org1")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Org1"));
 
-        MockHttpServletRequestBuilder requestBuilderForDelete = MockMvcRequestBuilders
-                .delete("/organizations/1");
-
-        mockMvc.perform(requestBuilderForAdd);
-
-        ResultActions resultActions = mockMvc.perform(requestBuilderForDelete);
+        ResultActions resultActions = testDataHelperOrganization.deleteOrganizationRequest(1l);
 
         resultActions.andExpect(status().isOk());
 

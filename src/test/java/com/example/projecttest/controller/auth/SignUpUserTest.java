@@ -4,9 +4,7 @@ import com.example.projecttest.CommonIntegrationTest;
 import com.example.projecttest.dto.auth.UserDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,12 +16,7 @@ public class SignUpUserTest extends CommonIntegrationTest {
     @DisplayName("should user sign up status code 201")
     void shouldUserSignUp() throws Exception {
 
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/auth/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto("A'zam", "azam", "123")))
-        );
+        ResultActions resultActions = testDataHelperAuth.signUpUserRequest(new UserDto("Azamjon", "azam", "123"));
 
         resultActions.andExpect(status().isCreated());
     }
@@ -32,19 +25,9 @@ public class SignUpUserTest extends CommonIntegrationTest {
     @DisplayName("should fail user sign up because of user exist status code 409")
     void shouldFailUserSignUpByUserExist() throws Exception {
 
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/auth/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto("A'zam", "azam", "123")))
-        );
+        testDataHelperAuth.signUpUserRequest(new UserDto("Azamjon", "azam", "123"));
 
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/auth/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto("Ali", "azam", "12300")))
-        );
+        ResultActions resultActions = testDataHelperAuth.signUpUserRequest(new UserDto("Ali", "azam", "12300"));
 
         resultActions.andExpect(status().isConflict());
     }
@@ -53,12 +36,7 @@ public class SignUpUserTest extends CommonIntegrationTest {
     @DisplayName("should fail user sign up because of required fields null status code 409")
     void shouldFailUserSignUpByRequiredFields() throws Exception {
 
-        ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/auth/sign-up")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new UserDto(null, "azam", "12300")))
-        );
+        ResultActions resultActions = testDataHelperAuth.signUpUserRequest(new UserDto(null, "azam", "123"));
 
         resultActions.andExpect(status().isBadRequest());
     }

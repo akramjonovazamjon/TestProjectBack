@@ -1,14 +1,14 @@
 package com.example.projecttest.controller.employee;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.employee.CreateEmployee;
+import com.example.projecttest.dto.organization.CreateOrganization;
+import com.example.projecttest.dto.position.CreatePosition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,83 +22,37 @@ public class CreateEmployeeTest extends CommonIntegrationTest {
     @DisplayName("should create employee status 201")
     void shouldCreateEmployee() throws Exception {
 
-        // create organization
-        {
-            MockHttpServletRequestBuilder requestBuilderForOrgAdd = MockMvcRequestBuilders
-                    .post("/organizations")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("name", "Exadel")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-            mockMvc.perform(requestBuilderForOrgAdd);
-        }
+        testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(5000), 1L));
 
-        //create position
-        {
-            MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                    .post("/positions")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 5000, "orgId", 1)));
+        ResultActions resultActions = testDataHelperEmployee.createEmployeeRequest(new CreateEmployee("A'zamjon", "9175", 1L));
 
-            mockMvc.perform(requestBuilderForPositionAdd);
-        }
+        resultActions
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.result.id").value(1))
+                .andExpect(jsonPath("$.result.fullName").value("A'zamjon"))
+                .andExpect(jsonPath("$.result.phoneNumber").value("9175"))
+                .andExpect(jsonPath("$.result.position").value("Java Developer"))
+                .andExpect(jsonPath("$.result.salary").value(5000))
+                .andExpect(jsonPath("$.result.organization").value("Exadel"));
 
-        //create employee
-        {
-            MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                    .post("/employees")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("fullName", "A'zamjon", "phoneNumber", "9175", "positionId", 1)));
-
-            ResultActions resultActions = mockMvc.perform(requestBuilderForPositionAdd);
-
-            resultActions
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.result.id").value(1))
-                    .andExpect(jsonPath("$.result.fullName").value("A'zamjon"))
-                    .andExpect(jsonPath("$.result.phoneNumber").value("9175"))
-                    .andExpect(jsonPath("$.result.position").value("Java Developer"))
-                    .andExpect(jsonPath("$.result.salary").value(5000))
-                    .andExpect(jsonPath("$.result.organization").value("Exadel"));
-        }
     }
 
     @Test
     @DisplayName("should fail by phoneNumber duplicate create employee status 409")
     void shouldFailByPhoneNumberDuplicateCreateEmployee() throws Exception {
 
-        // create organization
-        {
-            MockHttpServletRequestBuilder requestBuilderForOrgAdd = MockMvcRequestBuilders
-                    .post("/organizations")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("name", "Exadel")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-            mockMvc.perform(requestBuilderForOrgAdd);
-        }
+        testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(5000), 1L));
 
-        //create position
-        {
-            MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                    .post("/positions")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 5000, "orgId", 1)));
+        testDataHelperEmployee.createEmployeeRequest(new CreateEmployee("A'zamjon", "9175", 1L));
 
-            mockMvc.perform(requestBuilderForPositionAdd);
-        }
+        ResultActions resultActions = testDataHelperEmployee.createEmployeeRequest(new CreateEmployee("A'zamjon", "9175", 1L));
 
-        //create employee
-        {
-            MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                    .post("/employees")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(Map.of("fullName", "A'zamjon", "phoneNumber", "9175", "positionId", 1)));
+        resultActions.andExpect(status().isConflict());
 
-            mockMvc.perform(requestBuilderForPositionAdd);
-            ResultActions resultActions = mockMvc.perform(requestBuilderForPositionAdd);
-
-            resultActions
-                    .andExpect(status().isConflict());
-        }
     }
 
 

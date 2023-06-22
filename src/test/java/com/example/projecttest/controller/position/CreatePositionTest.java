@@ -1,14 +1,13 @@
 package com.example.projecttest.controller.position;
 
 import com.example.projecttest.CommonIntegrationTest;
+import com.example.projecttest.dto.organization.CreateOrganization;
+import com.example.projecttest.dto.position.CreatePosition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,19 +19,9 @@ public class CreatePositionTest extends CommonIntegrationTest {
     @DisplayName("should create position status 201")
     void shouldCreatePosition() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilderForOrgAdd = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Exadel")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-        mockMvc.perform(requestBuilderForOrgAdd);
-
-        MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                .post("/positions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 1500, "orgId", 1)));
-
-        ResultActions resultActions = mockMvc.perform(requestBuilderForPositionAdd);
+        ResultActions resultActions = testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(1500), 1L));
 
         resultActions
                 .andExpect(status().isCreated())
@@ -46,38 +35,22 @@ public class CreatePositionTest extends CommonIntegrationTest {
     @DisplayName("should fail create position because of organization not found by id status 409")
     void shouldFailByOrganizationIdCreatePosition() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                .post("/positions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 1500, "orgId", 1)));
+        ResultActions resultActions = testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(1500), 1L));
 
-        ResultActions resultActions = mockMvc.perform(requestBuilderForPositionAdd);
-
-        resultActions
-                .andExpect(status().isConflict());
+        resultActions.andExpect(status().isConflict());
     }
 
     @Test
-    @DisplayName("should fail create position because of organization not found by id status 409")
+    @DisplayName("should fail create position because of duplicate value status 409")
     void shouldFailByDuplicateCreatePosition() throws Exception {
 
-        MockHttpServletRequestBuilder requestBuilderForOrgAdd = MockMvcRequestBuilders
-                .post("/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Exadel")));
+        testDataHelperOrganization.createOrganizationRequest(new CreateOrganization("Exadel"));
 
-        mockMvc.perform(requestBuilderForOrgAdd);
+        testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(1500), 1L));
 
-        MockHttpServletRequestBuilder requestBuilderForPositionAdd = MockMvcRequestBuilders
-                .post("/positions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("name", "Java Developer", "salary", 1500, "orgId", 1)));
+        ResultActions resultActions = testDataHelperPosition.createPositionRequest(new CreatePosition("Java Developer", BigDecimal.valueOf(1500), 1L));
 
-        mockMvc.perform(requestBuilderForPositionAdd);
-        ResultActions resultActions = mockMvc.perform(requestBuilderForPositionAdd);
-
-        resultActions
-                .andExpect(status().isConflict());
+        resultActions.andExpect(status().isConflict());
     }
 
 
